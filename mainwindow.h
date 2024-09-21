@@ -22,6 +22,8 @@ private slots:
 
     void on_downloadButton_clicked();
 
+    void on_comboBox_activated(int index);
+
 private:
     Ui::MainWindow *ui;
 };

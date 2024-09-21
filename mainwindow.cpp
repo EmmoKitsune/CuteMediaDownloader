@@ -6,6 +6,8 @@
 #include <QStringList>
 #include <QFileDialog>
 
+#include <iostream>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -15,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 QString URL = "";
 QString downloadDir = "";
+int format = 0;
 
 
 MainWindow::~MainWindow()
@@ -38,17 +41,30 @@ void MainWindow::on_downloadButton_clicked()
         downloadDir = QFileDialog::getExistingDirectory(this,"Chose download directory","/home",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
         if(!downloadDir.isEmpty()){
+            switch (format) {
+            case 0:
+                arguments << "-f" << "mp4";
+                break;
+            case 1:
+                arguments << "-x" << "--audio-format" << "mp3";
+                break;
 
-            arguments << "-f" << "mp4";
+            case 2:
+                arguments << "-x" << "--audio-format" << "wav";
+                break;
+
+            default:
+                QMessageBox::information(this,"Error","wtf,invalid format???");
+                break;
+            }
+
             arguments << "--output" << downloadDir + "/%(title)s.%(ext)s" << URL;
 
             process->start("yt-dlp",arguments);
 
             if(!process->waitForStarted())
             {
-                QMessageBox::information(this,"Error","Error downloading media");
-                delete process;
-                return;
+                QMessageBox::information(this,"Error","Error downloading media,did you had yt-dlp? ");
             }
             if(process->waitForFinished())
             {
@@ -70,5 +86,11 @@ void MainWindow::on_downloadButton_clicked()
         QMessageBox::information(this,"Error","URL is empty");
         return;
     }
+}
+
+
+void MainWindow::on_comboBox_activated(int index)
+{
+    format = index;
 }
 
