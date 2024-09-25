@@ -6,8 +6,6 @@
 #include <QStringList>
 #include <QFileDialog>
 
-#include <iostream>
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -39,6 +37,7 @@ void MainWindow::on_downloadButton_clicked()
         QStringList arguments;
 
         downloadDir = QFileDialog::getExistingDirectory(this,"Chose download directory","/home",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        //^i hate this line of code
 
         if(!downloadDir.isEmpty()){
             switch (format) {
@@ -58,13 +57,15 @@ void MainWindow::on_downloadButton_clicked()
                 break;
             }
 
+            QMessageBox::information(this,"Info","Starting to download!");
+
             arguments << "--output" << downloadDir + "/%(title)s.%(ext)s" << URL;
 
             process->start("yt-dlp",arguments);
 
             if(!process->waitForStarted())
             {
-                QMessageBox::information(this,"Error","Error downloading media,did you had yt-dlp? ");
+                QMessageBox::information(this,"Error","Error downloading media,did you had yt-dlp installed?");
             }
             if(process->waitForFinished())
             {
